@@ -59,3 +59,8 @@ check_year <- function(year = 2022) {
 ```
 
 ## 3.Specify the numeric variables to be returned (AGEP and PWGTP as default). PWGTP should always be returned
+
+```{r}
+
+```
+

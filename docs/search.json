@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "Project.html",
+    "href": "Project.html",
+    "title": "Project1",
+    "section": "",
+    "text": "Before starting the project, load all the package that is useful for this project\nlibrary(tidyverse)\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ dplyr     1.1.4     ✔ readr     2.1.5\n✔ forcats   1.0.0     ✔ stringr   1.5.1\n✔ ggplot2   3.5.0     ✔ tibble    3.2.1\n✔ lubridate 1.9.3     ✔ tidyr     1.3.1\n✔ purrr     1.0.2     \n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\nlibrary(httr)\nlibrary(jsonlite)\n\n\n载入程辑包：'jsonlite'\n\nThe following object is masked from 'package:purrr':\n\n    flatten\n\nlibrary(glue)"
+  },
+  {
+    "objectID": "Project.html#getting-the-usual-process-to-work-with-a-given-url-and-turn-the-returned-info-into-a-nice-tibble.",
+    "href": "Project.html#getting-the-usual-process-to-work-with-a-given-url-and-turn-the-returned-info-into-a-nice-tibble.",
+    "title": "Project1",
+    "section": "1.Getting the usual process to work with a given URL and turn the returned info into a nice tibble.",
+    "text": "1.Getting the usual process to work with a given URL and turn the returned info into a nice tibble.\nTo start any work of data, we need to get the data first. As we want to use API data, it would be nice if the data can be converted to tibble format. To bring in data, we need to build the URL first, and use GET() function to contact the website, then parse the returned data, finally put it into a tibble. Note, it is possible the process failed, thus, it would be safer if we add the option which is ‘fail to access the data’.Based on the information from Google,\nAfter get the returned data, I need to make it to a nice tibble format, however, remember that the first row that returned is not the data or the column name. Thus, we need to removed the first row for the output.I also use drop=False to keep the result as a table and not simplify it into a vector. After this step, we already exclude everything we don’t want so far.The last step is that give the data the column names. And the we should be good to get teh tibble table data by API now.\n\ndata_to_tibble &lt;- function(url) {\n  \n  returned &lt;- httr::GET(url)\n  \n  if (httr::status_code(returned) != 200) {\n    stop(\"FAILED!!!!\")\n  }\n  \n  parsed &lt;- jsonlite::fromJSON(rawToChar(returned$content))\n  \n  out &lt;- as_tibble(parsed[-1, , drop = FALSE])\n  \n  names(out) &lt;- parsed[1, ]\n  \n  out\n}"
+  },
+  {
+    "objectID": "Project.html#year-of-survey-2022-as-default.-only-a-single-value-here",
+    "href": "Project.html#year-of-survey-2022-as-default.-only-a-single-value-here",
+    "title": "Project1",
+    "section": "2. Year of survey (2022 as default). Only a single value here",
+    "text": "2. Year of survey (2022 as default). Only a single value here\nBased on the requirement, there are basically 2 things I need to do. First, make sure there is only single year value here; second, make sure every year information here is between 2010 to 2022\n\ncheck_year &lt;- function(year = 2022) {\n  \n  if (length(year) != 1) {\n    stop(\"Please provide only one year.\")\n  }\n  \n  if (!year %in% 2010:2022) {\n    stop(\"Year not between 2010 and 2022.\")\n  }\n  \n  year\n}"
+  },
+  {
+    "objectID": "Project.html#specify-the-numeric-variables-to-be-returned-agep-and-pwgtp-as-default.-pwgtp-should-always-be-returned",
+    "href": "Project.html#specify-the-numeric-variables-to-be-returned-agep-and-pwgtp-as-default.-pwgtp-should-always-be-returned",
+    "title": "Project1",
+    "section": "3.Specify the numeric variables to be returned (AGEP and PWGTP as default). PWGTP should always be returned",
+    "text": "3.Specify the numeric variables to be returned (AGEP and PWGTP as default). PWGTP should always be returned"
+  }
+]
