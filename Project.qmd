@@ -1,0 +1,61 @@
+---
+title: "Project1"
+Author: "Jiayin Liu"
+format: html
+editor: visual
+---
+
+Before starting the project, load all the package that is useful for this project
+```{r}
+library(tidyverse)
+library(httr)
+library(jsonlite)
+library(glue)
+```
+
+# Data Processing
+
+## 1.Getting the usual process to work with a given URL and turn the returned info into a nice tibble.
+
+To start any work of data, we need to get the data first. As we want to use API data, it would be nice if the data can be converted to tibble format. 
+To bring in data, we need to build the URL first, and use GET() function to contact the website, then parse the returned data, finally put it into a tibble. Note, it is possible the process failed, thus, it would be safer if we add the option which is 'fail to access the data'.Based on the information from Google, 
+
+After get the returned data, I need to make it to a nice tibble format, however, remember that the first row that returned is not the data or the column name. Thus, we need to removed the first row for the output.I also use drop=False to keep the result as a table and not simplify it into a vector. After this step, we already exclude everything we don't want so far.The last step is that give the data the column names. And the we should be good to get teh tibble table data by API now.
+```{r}
+data_to_tibble <- function(url) {
+  
+  returned <- httr::GET(url)
+  
+  if (httr::status_code(returned) != 200) {
+    stop("FAILED!!!!")
+  }
+  
+  parsed <- jsonlite::fromJSON(rawToChar(returned$content))
+  
+  out <- as_tibble(parsed[-1, , drop = FALSE])
+  
+  names(out) <- parsed[1, ]
+  
+  out
+}
+```
+
+## 2. Year of survey (2022 as default). Only a single value here
+
+Based on the requirement, there are basically 2 things I need to do. First, make sure there is only single year value here; second, make sure every year information here is between 2010 to 2022
+```{r}
+check_year <- function(year = 2022) {
+  
+  if (length(year) != 1) {
+    stop("Please provide only one year.")
+  }
+  
+  if (!year %in% 2010:2022) {
+    stop("Year not between 2010 and 2022.")
+  }
+  
+  year
+}
+```
+
+## 3.Specify the numeric variables to be returned (AGEP and PWGTP as default). PWGTP should always be returned
