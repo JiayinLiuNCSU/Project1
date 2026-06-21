@@ -22,7 +22,7 @@ library(tidyr)
 
 ## 1.Getting the usual process to work with a given URL and turn the returned info into a nice tibble.
 
-To start any work of data, we need to get the data first. As we want to use API data, it would be nice if the data can be converted to tibble format. To bring in data, we need to build the URL first, and use GET() function to contact the website, then parse the returned data, finally put it into a tibble. Note, it is possible the process failed, thus, it would be safer if we add the option which is 'fail to access the data'.Based on the information from Google,
+To start any work of data, we need to get the data first. As we want to use API data, it would be nice if the data can be converted to tibble format. To bring in data, we need to build the URL first, and use GET() function to contact the website, then parse the returned data, finally put it into a tibble. Note, it is possible the process failed, thus, it would be safer if we add the option which is 'fail to access the data'.Based on the information from Google,when status_code return 200, it is failed.
 
 After get the returned data, I need to make it to a nice tibble format, however, remember that the first row that returned is not the data or the column name. Thus, we need to removed the first row for the output.I also use drop=False to keep the result as a table and not simplify it into a vector. After this step, we already exclude everything we don't want so far.The last step is that give the data the column names. And the we should be good to get teh tibble table data by API now.
 
@@ -71,7 +71,7 @@ check_year <- function(year = 2022) {
 
 ## 3.Specify the numeric variables to be returned (AGEP and PWGTP as default). PWGTP should always be returned
 
-For the time variables, my strategy is to convert them directly to the minutes in a day. There can be 60\*24=1440 minutes in a day.
+For the time variables, my strategy is to convert them directly to the minutes in a day. There can be 60\*24=1440 minutes in a day. But this is only for the JWAP, the JWDP is kind of a mix, it mix different pattern, different time interval, thus, I decide to manually map the JWDP variable.
 
 ```{r}
 # create mapping label for use first. Tii many different pattern,, I decide to do this mannuly 
@@ -301,6 +301,8 @@ process_numeric_vars <- function(data, num_vars = c("AGEP", "PWGTP")) {
 
 ## 4. Specify the categorical variables to be returned (SEX as default).
 
+There are several variables pointed by the instruction, each variable has different levels, for SCHL, it has a great number of factor levels, and I will point these out one by one. 
+
 ```{r}
 process_categorical_vars <- function(data, cat_vars = "SEX") {
   
@@ -519,6 +521,7 @@ process_geography <- function(data, geography = "ST") {
 
 ## 6. Subset the data
 
+To getting the state, region and division information, I need to use ST, DIVISION, and REGION variables. However, when I try to subset the data and try to run the example, I found I cannot use ST= 'xx' which is the number that represent for a state to extract data directly, this might because these variables are not allowed to use directly as predicates. The only option for me is to use ucgid. While I personally live in Maryland, I would take Maryland as an example state, and the state number is 24.
 ```{r}
 # I tried to use ST, DIVISITON, and REGION directly, but the API doesnt allowed me to use these variables directly as predicates, so we use ucgid for API-level subsetting.
 process_geo_subset <- function(geography = "ST", geo_values = "24") {
@@ -580,7 +583,7 @@ process_geo_subset <- function(geography = "ST", geo_values = "24") {
 
 ## 7. Apply these small function into 1 main function for query
 
-I put all the default information first
+I put all the default information first, and combine all the privious wrote small function together to query the data I truly need.
 
 ```{r}
 
