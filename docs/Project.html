@@ -1127,10 +1127,11 @@ New names:
 <span id="cb18-140"><a href="#cb18-140" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_vars =</span> <span class="fu">c</span>(<span class="st">"AGEP"</span>,<span class="st">"GRPIP"</span>),</span>
 <span id="cb18-141"><a href="#cb18-141" aria-hidden="true" tabindex="-1"></a>  <span class="at">cat_vars =</span> <span class="fu">c</span>(<span class="st">"SEX"</span>,<span class="st">"SCH"</span>,<span class="st">"SCHL"</span>),</span>
 <span id="cb18-142"><a href="#cb18-142" aria-hidden="true" tabindex="-1"></a>  <span class="at">group_var=</span><span class="st">"year"</span></span>
-<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a>)<span class="ot">-&gt;</span>a</span>
+<span id="cb18-144"><a href="#cb18-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-145"><a href="#cb18-145" aria-hidden="true" tabindex="-1"></a>a<span class="sc">$</span>numeric_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$numeric_summary
-$numeric_summary$AGEP
+<pre><code>$AGEP
 # A tibble: 3 × 4
   variable group weighted_mean weighted_sd
   &lt;chr&gt;    &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt;
@@ -1138,17 +1139,17 @@ $numeric_summary$AGEP
 2 AGEP      2021          36.3        22.2
 3 AGEP      2022          36.2        22.3
 
-$numeric_summary$GRPIP
+$GRPIP
 # A tibble: 3 × 4
   variable group weighted_mean weighted_sd
   &lt;chr&gt;    &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt;
 1 GRPIP     2019          15.0        25.1
 2 GRPIP     2021          14.1        25.1
-3 GRPIP     2022          13.5        24.1
-
-
-$categorical_summary
-$categorical_summary$SEX
+3 GRPIP     2022          13.5        24.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>a<span class="sc">$</span>categorical_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$SEX
 # A tibble: 6 × 5
   variable group level  weighted_count percent
   &lt;chr&gt;    &lt;dbl&gt; &lt;fct&gt;           &lt;dbl&gt;   &lt;dbl&gt;
@@ -1159,7 +1160,7 @@ $categorical_summary$SEX
 5 SEX       2022 Male        523678312    17.0
 6 SEX       2022 Female      535796734    17.4
 
-$categorical_summary$SCH
+$SCH
 # A tibble: 12 × 5
    variable group level                                   weighted_count percent
    &lt;chr&gt;    &lt;dbl&gt; &lt;fct&gt;                                            &lt;dbl&gt;   &lt;dbl&gt;
@@ -1176,7 +1177,7 @@ $categorical_summary$SCH
 11 SCH       2022 Yes, public school or public college         229410916    7.45
 12 SCH       2022 Yes, private school or college or home…       51368482    1.67
 
-$categorical_summary$SCHL
+$SCHL
 # A tibble: 48 × 5
    variable group level                              weighted_count percent
    &lt;chr&gt;    &lt;dbl&gt; &lt;fct&gt;                                       &lt;dbl&gt;   &lt;dbl&gt;
@@ -1197,53 +1198,151 @@ $categorical_summary$SCHL
 <section id="for-plot" class="level2">
 <h2 class="anchored" data-anchor-id="for-plot">2. for plot</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plot.census <span class="ot">&lt;-</span> <span class="cf">function</span>(x,cat_var,num_var,...) {</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check PWGTP </span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"PWGTP"</span> <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"PWGTP must be in the data."</span>)</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check selected variables </span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(cat_var <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"The categorical variable not in the data."</span>)</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(num_var <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"The numeric variable not in the data."</span>)</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>PWGTP <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x<span class="sc">$</span>PWGTP)</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  x[[num_var]] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x[[num_var]])</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> x,</span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">get</span>(cat_var),</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">get</span>(num_var),</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">weight =</span> PWGTP</span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
-<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> cat_var,</span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> num_var,</span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Weighted boxplot of"</span>, num_var, <span class="st">"by"</span>, cat_var)</span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a><span class="co">#test the function</span></span>
-<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="co"># plot(</span></span>
-<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="co">#   rep_dt,</span></span>
-<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="co">#   cat_var = c("SEX","SCH","SCHL"),</span></span>
-<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a><span class="co">#   num_var = c("AGEP","GRPIP")</span></span>
-<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(rep_dt) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"census"</span>, <span class="fu">class</span>(rep_dt))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot function </span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>plot_census <span class="ot">&lt;-</span> <span class="cf">function</span>(x, cat_var, num_var, ...) {</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check census class</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">inherits</span>(x, <span class="st">"census"</span>)) {</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"x must have class 'census'"</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check PWGTP</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"PWGTP"</span> <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"PWGTP must be in the data."</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check categorical variables</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(cat_var <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    missing_cat <span class="ot">&lt;-</span> cat_var[<span class="sc">!</span>(cat_var <span class="sc">%in%</span> <span class="fu">names</span>(x))]</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">"The categorical variable not in the data:"</span>,</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste</span>(missing_cat, <span class="at">collapse =</span> <span class="st">", "</span>)))</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check numeric variables</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(num_var <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    missing_num <span class="ot">&lt;-</span> num_var[<span class="sc">!</span>(num_var <span class="sc">%in%</span> <span class="fu">names</span>(x))]</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">"The numeric variable not in the data:"</span>,</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>               <span class="fu">paste</span>(missing_num, <span class="at">collapse =</span> <span class="st">", "</span>)))</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make sure weight is numeric</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>PWGTP <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x<span class="sc">$</span>PWGTP)</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Store plots</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  plot_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create one plot for each cat_var and num_var combination</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (cat <span class="cf">in</span> cat_var) {</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (num <span class="cf">in</span> num_var) {</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>      x[[num]] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x[[num]])</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>      p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x,</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> .data[[cat]],<span class="at">y =</span> .data[[num]],<span class="at">weight =</span> PWGTP)) <span class="sc">+</span></span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">x =</span> cat,<span class="at">y =</span> num,<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Weighted boxplot of"</span>, num, <span class="st">"by"</span>, cat)</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>      plot_list[[<span class="fu">paste</span>(cat, num, <span class="at">sep =</span> <span class="st">"_"</span>)]] <span class="ot">&lt;-</span> p</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(plot_list)</span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a><span class="co">#This is for the example to run faster, and the prebious function can run different combination, just takes tooooo long to run. (For me over 1 hour)</span></span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>plot_faster<span class="ot">&lt;-</span><span class="cf">function</span>(x, cat_var, num_var, <span class="at">max_n =</span> <span class="dv">5000</span>, ...) {</span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check census class</span></span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">inherits</span>(x, <span class="st">"census"</span>)) {</span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"x must have class 'census'"</span>)</span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-65"><a href="#cb22-65" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-66"><a href="#cb22-66" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check PWGTP</span></span>
+<span id="cb22-67"><a href="#cb22-67" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"PWGTP"</span> <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
+<span id="cb22-68"><a href="#cb22-68" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"PWGTP must be in the data."</span>)</span>
+<span id="cb22-69"><a href="#cb22-69" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-70"><a href="#cb22-70" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-71"><a href="#cb22-71" aria-hidden="true" tabindex="-1"></a>  <span class="co"># categorical variable</span></span>
+<span id="cb22-72"><a href="#cb22-72" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(cat_var) <span class="sc">!=</span> <span class="dv">1</span>) {</span>
+<span id="cb22-73"><a href="#cb22-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"one categorical variable."</span>)</span>
+<span id="cb22-74"><a href="#cb22-74" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-75"><a href="#cb22-75" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-76"><a href="#cb22-76" aria-hidden="true" tabindex="-1"></a>  <span class="co"># numeric variable</span></span>
+<span id="cb22-77"><a href="#cb22-77" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(num_var) <span class="sc">!=</span> <span class="dv">1</span>) {</span>
+<span id="cb22-78"><a href="#cb22-78" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">" one numeric variable."</span>)</span>
+<span id="cb22-79"><a href="#cb22-79" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-80"><a href="#cb22-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-81"><a href="#cb22-81" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check selected variables</span></span>
+<span id="cb22-82"><a href="#cb22-82" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(cat_var <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
+<span id="cb22-83"><a href="#cb22-83" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"The categorical variable not in the data."</span>)</span>
+<span id="cb22-84"><a href="#cb22-84" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-85"><a href="#cb22-85" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-86"><a href="#cb22-86" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>(num_var <span class="sc">%in%</span> <span class="fu">names</span>(x))) {</span>
+<span id="cb22-87"><a href="#cb22-87" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">"The numeric variable not in the data."</span>)</span>
+<span id="cb22-88"><a href="#cb22-88" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-89"><a href="#cb22-89" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-90"><a href="#cb22-90" aria-hidden="true" tabindex="-1"></a>  <span class="co"># keep only needed columns to make it faster</span></span>
+<span id="cb22-91"><a href="#cb22-91" aria-hidden="true" tabindex="-1"></a>  plot_data <span class="ot">&lt;-</span> x <span class="sc">%&gt;%</span> </span>
+<span id="cb22-92"><a href="#cb22-92" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(cat_var, num_var, <span class="st">"PWGTP"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-93"><a href="#cb22-93" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
+<span id="cb22-94"><a href="#cb22-94" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(.data[[cat_var]]),</span>
+<span id="cb22-95"><a href="#cb22-95" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(.data[[num_var]]),</span>
+<span id="cb22-96"><a href="#cb22-96" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(PWGTP)</span>
+<span id="cb22-97"><a href="#cb22-97" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-98"><a href="#cb22-98" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-99"><a href="#cb22-99" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sample rows for faster plotting</span></span>
+<span id="cb22-100"><a href="#cb22-100" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(plot_data) <span class="sc">&gt;</span> max_n) {</span>
+<span id="cb22-101"><a href="#cb22-101" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb22-102"><a href="#cb22-102" aria-hidden="true" tabindex="-1"></a>    plot_data <span class="ot">&lt;-</span> plot_data <span class="sc">%&gt;%</span> </span>
+<span id="cb22-103"><a href="#cb22-103" aria-hidden="true" tabindex="-1"></a>      <span class="fu">slice_sample</span>(<span class="at">n =</span> max_n)</span>
+<span id="cb22-104"><a href="#cb22-104" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-105"><a href="#cb22-105" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-106"><a href="#cb22-106" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make sure variables are correct type</span></span>
+<span id="cb22-107"><a href="#cb22-107" aria-hidden="true" tabindex="-1"></a>  plot_data[[cat_var]] <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(plot_data[[cat_var]])</span>
+<span id="cb22-108"><a href="#cb22-108" aria-hidden="true" tabindex="-1"></a>  plot_data[[num_var]] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(plot_data[[num_var]])</span>
+<span id="cb22-109"><a href="#cb22-109" aria-hidden="true" tabindex="-1"></a>  plot_data<span class="sc">$</span>PWGTP <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(plot_data<span class="sc">$</span>PWGTP)</span>
+<span id="cb22-110"><a href="#cb22-110" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-111"><a href="#cb22-111" aria-hidden="true" tabindex="-1"></a>  <span class="co"># boxplot</span></span>
+<span id="cb22-112"><a href="#cb22-112" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb22-113"><a href="#cb22-113" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> plot_data,</span>
+<span id="cb22-114"><a href="#cb22-114" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb22-115"><a href="#cb22-115" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">get</span>(cat_var),</span>
+<span id="cb22-116"><a href="#cb22-116" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">get</span>(num_var),</span>
+<span id="cb22-117"><a href="#cb22-117" aria-hidden="true" tabindex="-1"></a>      <span class="at">weight =</span> PWGTP</span>
+<span id="cb22-118"><a href="#cb22-118" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-119"><a href="#cb22-119" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb22-120"><a href="#cb22-120" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(...) <span class="sc">+</span></span>
+<span id="cb22-121"><a href="#cb22-121" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb22-122"><a href="#cb22-122" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> cat_var,</span>
+<span id="cb22-123"><a href="#cb22-123" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> num_var,</span>
+<span id="cb22-124"><a href="#cb22-124" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Weighted boxplot of"</span>, num_var, <span class="st">"by"</span>, cat_var)</span>
+<span id="cb22-125"><a href="#cb22-125" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb22-126"><a href="#cb22-126" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb22-127"><a href="#cb22-127" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-128"><a href="#cb22-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-129"><a href="#cb22-129" aria-hidden="true" tabindex="-1"></a><span class="co">#test for the function</span></span>
+<span id="cb22-130"><a href="#cb22-130" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_faster</span>(</span>
+<span id="cb22-131"><a href="#cb22-131" aria-hidden="true" tabindex="-1"></a>  rep_dt,</span>
+<span id="cb22-132"><a href="#cb22-132" aria-hidden="true" tabindex="-1"></a>  <span class="at">cat_var =</span> <span class="st">"SEX"</span>,</span>
+<span id="cb22-133"><a href="#cb22-133" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_var =</span> <span class="st">"AGEP"</span></span>
+<span id="cb22-134"><a href="#cb22-134" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Project_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 </section>
 </section>
 <section id="summary" class="level1">
 <h1>Summary</h1>
+<p>In the project instruction, it mentions we want to exclude year 2020 due to COVID-19. This drive my interests that how COVID-19 affects these factors includes Gross rent as a percentage of household income past 12 months, Educational attainment situation, and School enrollment situation.</p>
+<p>The weighted mean of AGEP (age) was 35.9 in 2019, 36.3 in 2021, and 36.2 in 2022, with standard deviations around 22 years in all three years. This shows that the overall age distribution did not change a lot before and after COVID. I think this is good, since this makes other comparison more strong. For GRPIP, the weighted mean decreased from 15.0 in 2019 to 14.1 in 2021 and then to 13.5 in 2022. in one word, the gross rent as a percentage of household income past 12 months keep droping. This indicates that the average gross rent percentage of income was lower in the post-COVID years in this sample. Although the standard deviations were still large, around 24 to 25, this can cause by a lot of variation among individuals or households. In addition, it is hard to hard to judge if this means families are living better life or not, since this dropping percentage can caused by moving to lower rent home, or increasing daily life budge push the families.</p>
+<p>For the categorical variables, the weighted counts for SEX show that females were slightly more represented than males in each year. In 2019, the weighted count was about 510.4 million for males and 523.5 million for females. But in 2021, there was about 484.6 million for males and 501.3 million for females. And when it comes to 2022, the number increased to about 523.7 million for males and 535.8 million for females. For school enrollment (SCH), the largest category in every year was “No, has not attended in the last 3 months,” and the scond is “Yes, public school or public college.” This school enrollment pattern was consistent before and after COVID. For education attainment, In 2019 Regular high school diploma has the highest percentatge followed by bachelor’s degree. and this is the same thing for 2021 and 2022, but the percentage of having bachelor’s degree is increasing while the percentage of regular high school diploma is decreasing. Overall, the results told us that age and sex composition were quite stable across the years, while GRPIP showed a clearer decline after COVID. The school enrollment categories also showed similar thing across years. there was a small decrease in public school or public college enrollment in 2021 ,and then an increase again in 2022. People seems like to stay more in school for higher education after the COVID.</p>
 
 
 </section>

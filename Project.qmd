@@ -981,14 +981,88 @@ a$categorical_summary
 ## 2. for plot
 
 ```{r}
-plot.census <- function(x,cat_var,num_var,...) {
+
+class(rep_dt) <- c("census", class(rep_dt))
+
+#Plot function 
+plot_census <- function(x, cat_var, num_var, ...) {
+  # check census class
+  if (!inherits(x, "census")) {
+    stop("x must have class 'census'")
+  }
   
-  # Check PWGTP 
+  # Check PWGTP
+  if (!("PWGTP" %in% names(x))) {
+    stop("PWGTP must be in the data.")
+  }
+ 
+  # Check categorical variables
+  if (!all(cat_var %in% names(x))) {
+    missing_cat <- cat_var[!(cat_var %in% names(x))]
+    stop(paste("The categorical variable not in the data:",
+               paste(missing_cat, collapse = ", ")))
+  }
+ 
+  # Check numeric variables
+  if (!all(num_var %in% names(x))) {
+    missing_num <- num_var[!(num_var %in% names(x))]
+    stop(paste("The numeric variable not in the data:",
+               paste(missing_num, collapse = ", ")))
+  }
+ 
+  # Make sure weight is numeric
+  x$PWGTP <- as.numeric(x$PWGTP)
+ 
+  # Store plots
+  plot_list <- list()
+ 
+  # Create one plot for each cat_var and num_var combination
+  for (cat in cat_var) {
+    for (num in num_var) {
+     
+      x[[num]] <- as.numeric(x[[num]])
+     
+      p <- ggplot(
+        data = x,
+        aes(x = .data[[cat]],y = .data[[num]],weight = PWGTP)) +
+        geom_boxplot() +
+        labs(x = cat,y = num,title = paste("Weighted boxplot of", num, "by", cat)
+        )
+     
+      plot_list[[paste(cat, num, sep = "_")]] <- p
+    }
+  }
+ 
+  return(plot_list)
+}
+
+
+
+
+#This is for the example to run faster, and the prebious function can run different combination, just takes tooooo long to run. (For me over 1 hour)
+plot_faster<-function(x, cat_var, num_var, max_n = 5000, ...) {
+  
+  # check census class
+  if (!inherits(x, "census")) {
+    stop("x must have class 'census'")
+  }
+  
+  # check PWGTP
   if (!("PWGTP" %in% names(x))) {
     stop("PWGTP must be in the data.")
   }
   
-  # Check selected variables 
+  # categorical variable
+  if (length(cat_var) != 1) {
+    stop("one categorical variable.")
+  }
+  
+  # numeric variable
+  if (length(num_var) != 1) {
+    stop(" one numeric variable.")
+  }
+  
+  # check selected variables
   if (!(cat_var %in% names(x))) {
     stop("The categorical variable not in the data.")
   }
@@ -997,31 +1071,50 @@ plot.census <- function(x,cat_var,num_var,...) {
     stop("The numeric variable not in the data.")
   }
   
-  x$PWGTP <- as.numeric(x$PWGTP)
-  x[[num_var]] <- as.numeric(x[[num_var]])
+  # keep only needed columns to make it faster
+  plot_data <- x %>% 
+    select(all_of(c(cat_var, num_var, "PWGTP"))) %>% 
+    filter(
+      !is.na(.data[[cat_var]]),
+      !is.na(.data[[num_var]]),
+      !is.na(PWGTP)
+    )
   
+  # sample rows for faster plotting
+  if (nrow(plot_data) > max_n) {
+    set.seed(123)
+    plot_data <- plot_data %>% 
+      slice_sample(n = max_n)
+  }
+  
+  # make sure variables are correct type
+  plot_data[[cat_var]] <- as.factor(plot_data[[cat_var]])
+  plot_data[[num_var]] <- as.numeric(plot_data[[num_var]])
+  plot_data$PWGTP <- as.numeric(plot_data$PWGTP)
+  
+  # boxplot
   ggplot(
-    data = x,
+    data = plot_data,
     aes(
       x = get(cat_var),
       y = get(num_var),
       weight = PWGTP
     )
   ) +
-    geom_boxplot() +
+    geom_boxplot(...) +
     labs(
       x = cat_var,
       y = num_var,
       title = paste("Weighted boxplot of", num_var, "by", cat_var)
-    )
+    ) +
+    theme_minimal()
 }
 
-#test the function
-
-plot(
+#test for the function
+plot_faster(
   rep_dt,
-  cat_var = c("SEX","SCH","SCHL"),
-  num_var = c("AGEP","GRPIP")
+  cat_var = "SEX",
+  num_var = "AGEP"
 )
 ```
 
